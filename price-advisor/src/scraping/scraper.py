@@ -16,7 +16,7 @@ from data_processing.data_processer import DataProcesser
 options = Options()
 options.add_argument("--incognito")
 options.add_argument("start-maximized")
-# options.add_argument("--headless=new") # modalità senza interfaccia grafica
+options.add_argument("--headless=new") # modalità senza interfaccia grafica
 
 PAGINE = 3
 
@@ -47,7 +47,7 @@ class webScraper:
             advanced_search = self.driver.find_element(By.CLASS_NAME, "gh-search-button__advanced-link")
             advanced_search.click() # ricerca avanzata
 
-            print(f"Ricerca nelle prime {PAGINE} pagine\nprodotto: {product}, condizioni: {condition}")
+            print(f"Ricerca nelle prime {PAGINE} pagine\nProdotto: {product} - condizioni: {condition}")
 
             # search bar
             search_bar = self.wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="_nkw"]')))
