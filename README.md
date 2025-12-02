@@ -12,7 +12,7 @@ per stimare un **prezzo di vendita realistico** per un oggetto che vuoi vendere,
 
 ## Disclaimer sullo scraping
 
-> ⚠️ Lo scraping con Selenium è incluso **solo a scopo dimostrativo ed educativo**.  
+> Lo scraping con Selenium è incluso **solo a scopo dimostrativo ed educativo**.  
 > Fare scraping reale su siti in produzione può:
 > - violare i **Termini di Servizio**,
 > - violare le **policy** del sito,
@@ -22,7 +22,7 @@ per stimare un **prezzo di vendita realistico** per un oggetto che vuoi vendere,
 
 ---
 
-## ✨ Funzionalità principali
+## Funzionalità principali
 
 - **Scraping automatico** degli annunci tramite **Selenium**
 - Estrazione dei metadati essenziali (es. titolo, prezzo)
