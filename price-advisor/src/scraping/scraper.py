@@ -10,6 +10,7 @@ import time
 
 from config import REGEX_PRICE_1, REGEX_PRICE_2
 from data_processing.data_processer import DataProcesser
+from config import URL
 
 
 # opzioni browser
@@ -21,13 +22,13 @@ options.add_argument("--headless=new") # modalità senza interfaccia grafica
 PAGINE = 3
 
 
-class webScraper:
+class WebScraper:
     def __init__(self, wait_time: int) -> None:
         self.driver = webdriver.Chrome(options = options)
         self.wait = WebDriverWait(self.driver, wait_time)
 
 
-    def navigate_and_scrape(self, url: str, product: str, condition: str = None) -> list:
+    def navigate_and_scrape(self, product: str, condition: str = None) -> list:
         """
         Trova i prezzi degli ultimi articoli venduti su ebay del prodotto specificato
             - product = nome del prodotto
@@ -35,7 +36,7 @@ class webScraper:
         Restituisce la lista completa di articoli trovati nelle prime x pagine specificate.
         """
         try:
-            self.driver.get(url) # apre la pagina
+            self.driver.get(URL) # apre la pagina
 
             try:
                 reject_cookies = self.wait.until(EC.element_to_be_clickable((By.ID, "gdpr-banner-decline")))
@@ -114,16 +115,19 @@ class webScraper:
         processer = DataProcesser() # convertitore testo - float
 
         for i in items:
-            header = i.find_element(By.XPATH, './/span[@class="su-styled-text primary default"]').text
-            price = i.find_element(By.XPATH, './/div[@class="s-card__attribute-row"]').text
-            
-            # controllo sulla forma del prezzo
-            if not (re.match(REGEX_PRICE_1, price) or re.match(REGEX_PRICE_2, price)):
-                item = {
-                    "header": header,
-                    "price": processer.to_float(price)
-                }
+            try:
+                header = i.find_element(By.XPATH, './/span[@class="su-styled-text primary default"]').text
+                price = i.find_element(By.XPATH, './/div[@class="s-card__attribute-row"]').text
+                
+                # controllo sulla forma del prezzo
+                if not (re.match(REGEX_PRICE_1, price) or re.match(REGEX_PRICE_2, price)):
+                    item = {
+                        "header": header,
+                        "price": processer.to_float(price)
+                    }
 
-                new_list.append(item)
+                    new_list.append(item)
+            except:
+                print(f"Formato header non riconosciuto.")
         
         return new_list

@@ -14,6 +14,9 @@ class LinearRegressionModel:
         w = w_in # inizializzazione w
         b = b_in # inizializzazione b
 
+        x = np.asarray(x, dtype=float) # conversione in array np
+        y = np.asarray(y, dtype=float)
+
         for _ in range(iterations):
             dj_dw, dj_db = self.compute_gradient(x, y, w, b)
 

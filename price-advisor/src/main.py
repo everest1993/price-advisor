@@ -1,30 +1,39 @@
-from scraping.scraper import webScraper
-from data_processing.data_processer import DataProcesser
-from config import URL
+from chat.chat_openai import ask_assistant 
+from model.linear_regression_model import LinearRegressionModel
 
-import numpy as np
+import json
 
-scraper = webScraper(10)
-processer = DataProcesser()
 
-# URL, nome prodotto, condizione (opzionale: nuovo, usato)
-items = scraper.navigate_and_scrape(URL, "charizard psa 10", "usato")
+model = LinearRegressionModel()
 
-prices = None 
+while True:
+    """
+    Il filtraggio degli articoli non pertinenti viene eseguito dall'assistente ai.
+    A ogni item ritornato dallo scraper e filtrato viene assegnato un voto da 1 a 10 per applicare
+    una regressione lineare e fornire in output un valore adeguato al prezzo di vendita.
+    """
+    user_input = input("You: ")
 
-if items:
-    items.sort(key=lambda item: item["price"])
+    if user_input.lower().strip() in {"exit", "quit", "esci"}:
+        break
+
+    answer = ask_assistant(user_input)
     
-    # conversione in np.ndarray
-    prices = np.array([item["price"] for item in items])
+    try:
+        data = json.loads(answer)
 
-# chatgpt deve decidere gli elementi della lista che sono coerenti con la ricerca: no cover, accessori ecc
-# chatgpt deve dare un voto da 1 a 10 alla qualità dell'elemento basandosi sul titolo (o accesso descrizione)
+        items = data["items_scored"]
 
-# cleaning dei dati dagli outliers (quantili di default 25, 75)
-prices_cleaned = processer.clean_data_from_outliers(prices)
+        x = [float(item["score"]) for item in items]
+        y = [float(item["price"]) for item in items]
+        rating = float(data["rating"])
+        
+        # discesa del gradiente per calcolare i parametri del modello
+        w, b = model.perform_gradient_descent(x, y, 0.0, 0.0, 0.001 , 1000) 
 
-# regressione lineare per restituire il voto consigliato
+        selling_price = int(w * rating + b) # applicazione del modello al prodotto
 
-print(prices)
-print(prices_cleaned)
+        print(f"Assistant: puoi vendere l'articolo a {selling_price} EUR")
+    except Exception as e:
+        # risposta normale che non include i risultati
+        print(f"Assistant: {answer}\n")
